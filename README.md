@@ -1,7 +1,7 @@
 # bookShopContract
-======================
+-------------------
 Ethereum based smart contract for book shop
-======================
+-------------------
 Key highlights
 -------------------
 1. Only owner of the smart contract (Book Shop Owner) can add new books to contract.
