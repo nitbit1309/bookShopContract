@@ -20,12 +20,13 @@ contract BookManager {
 	mapping(address=>mapping(uint=>uint)) private mapOwnersToBooksToIndex;	//Owner=>BookId=>Index 
 	//Array Index = Index - 1
 
-	modifier _validBook(uint id) {
+	modifier _validBookId(uint id) {
 		require(id !=0 && id <= books.length, "Not a valid book id");
 		_;
 	}
 
 	function _addBook(string memory name, string memory author, uint price) internal returns(uint id) {
+		require(bytes(name).length > 0, "Book Name must not be empty.");
 		address self = address(this);
 		// console.log("Inside bookManager, this Address: %s", self);
 		books.push(Book(name, author, price));
@@ -37,7 +38,7 @@ contract BookManager {
 		return nextBookId++;
 	}
 
-	function _transfer_book(address from, address to, uint bookId) internal _validBook(bookId) {
+	function _transfer_book(address from, address to, uint bookId) internal _validBookId(bookId) {
 		require(mapBookToOwner[bookId] == from, "Book must be owned by transferee");
 
 		uint index = 0;
@@ -75,19 +76,19 @@ contract BookManager {
 		return bookIds;
 	}
 
-	function getBookName(uint bookId) external view _validBook(bookId) returns(string memory bookName) {
+	function getBookName(uint bookId) external view _validBookId(bookId) returns(string memory bookName) {
 		return books[bookId-1].name;
 	}
 
-	function getBookAuthorName(uint bookId) external view _validBook(bookId) returns(string memory bookAuthor) {
+	function getBookAuthorName(uint bookId) external view _validBookId(bookId) returns(string memory bookAuthor) {
 		return books[bookId-1].author;
 	}
 
-	function getBookPrice(uint bookId) public view _validBook(bookId) returns(uint bookPrice) {
+	function getBookPrice(uint bookId) public view _validBookId(bookId) returns(uint bookPrice) {
 		return books[bookId-1].price;
 	}
 
-	function getBookOwner(uint bookId) public view _validBook(bookId) returns(address bookOwner) {
+	function getBookOwner(uint bookId) public view _validBookId(bookId) returns(address bookOwner) {
 		return mapBookToOwner[bookId];
 	}
 }

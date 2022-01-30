@@ -25,7 +25,7 @@ contract BookShop is BookManager {
 		uint id = _addBook(name, author, price);
 		return id;
 	}
-	function buyBook(uint id) external payable _validBook(id) {
+	function buyBook(uint id) external payable _validBookId(id) {
 		require(msg.value >= getBookPrice(id), "Not enough amount.");
 		require(address(this) == getBookOwner(id), "Book is already sold.");
 		// (bool success, ) = address(this).call{value:msg.value}("");
