@@ -10,6 +10,10 @@ contract BookShop is BookManager {
 
 	address payable public owner;
 
+	event AddBook(uint indexed _id, string _name, uint _price);
+	event BookBought(address indexed _buyer, uint indexed _id,  uint price);
+	event BookReturned(address indexed _from, uint indexed _id);
+	event AmountWithdrawn(address indexed _to, uint _amount);
 	// receive() external payable {}
 
 	constructor() payable {
@@ -23,6 +27,7 @@ contract BookShop is BookManager {
 
 	function addBook(string memory name, string memory author, uint price) external onlyOwner returns(uint) {
 		uint id = _addBook(name, author, price);
+		emit AddBook(id, name, price);
 		return id;
 	}
 	function buyBook(uint id) external payable _validBookId(id) {
@@ -35,12 +40,14 @@ contract BookShop is BookManager {
 		_transfer_book(self, msg.sender, id);
 		totalNetSale += msg.value;
 		availableWithdrawAmt += (msg.value - getBookPrice(id)) + getBookPrice(id)/2;
+		emit BookBought(msg.sender, id, msg.value);
 	}
 
 	function returnBook(uint id) external {
 		_transfer_book(msg.sender, address(this), id);
 		(bool success,) = msg.sender.call{value: getBookPrice(id)/2}("");
 		require(success, "Payment to caller failed.");
+		emit BookReturned(msg.sender, id);
 	}
 
 	function withdrawAmount(uint amount) external onlyOwner {
@@ -51,6 +58,7 @@ contract BookShop is BookManager {
 		availableWithdrawAmt -= amount;
 		(bool success,) = msg.sender.call{value: amount}("");
 		require(success, "Payment to owner failed.");
+		emit AmountWithdrawn(msg.sender, amount);
 	}
 
 }
