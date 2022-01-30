@@ -21,9 +21,9 @@ contract BookShop is BookManager {
 		_;
 	}
 
-	function addBook(string memory name, string memory author, uint price) external onlyOwner {
+	function addBook(string memory name, string memory author, uint price) external onlyOwner returns(uint) {
 		uint id = _addBook(name, author, price);
-		// console.log("Added bookId: %d", id);
+		return id;
 	}
 	function buyBook(uint id) external payable _validBook(id) {
 		require(msg.value >= getBookPrice(id), "Not enough amount.");
@@ -49,7 +49,7 @@ contract BookShop is BookManager {
 			amount = availableWithdrawAmt;
 			
 		availableWithdrawAmt -= amount;
-		(bool success,) = msg.sender.call{value: availableWithdrawAmt}("");
+		(bool success,) = msg.sender.call{value: amount}("");
 		require(success, "Payment to owner failed.");
 	}
 
